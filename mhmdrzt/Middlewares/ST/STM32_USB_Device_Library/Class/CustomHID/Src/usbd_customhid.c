@@ -97,6 +97,22 @@ static uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length);
 static uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length);
 static uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length);
 
+/// *** Combined *** ////
+static uint8_t USBD_COMBINED_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
+static uint8_t USBD_COMBINED_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
+static uint8_t USBD_COMBINED_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
+
+static uint8_t USBD_COMBINED_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
+static uint8_t USBD_COMBINED_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum);
+static uint8_t USBD_COMBINED_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev);
+
+static uint8_t *USBD_COMBINED_HID_GetFSCfgDesc(uint16_t *length);
+static uint8_t *USBD_COMBINED_HID_GetHSCfgDesc(uint16_t *length);
+static uint8_t *USBD_COMBINED_HID_GetOtherSpeedCfgDesc(uint16_t *length);
+static uint8_t *USBD_COMBINED_HID_GetDeviceQualifierDesc(uint16_t *length);
+/// *** Combined *** ////
+
+
 /**
   * @}
   */
@@ -121,6 +137,24 @@ USBD_ClassTypeDef  USBD_CUSTOM_HID =
   USBD_CUSTOM_HID_GetFSCfgDesc,
   USBD_CUSTOM_HID_GetOtherSpeedCfgDesc,
   USBD_CUSTOM_HID_GetDeviceQualifierDesc,
+};
+
+USBD_ClassTypeDef USBD_COMBINED_HID = 
+{
+  USBD_COMBINED_HID_Init,
+  USBD_COMBINED_HID_DeInit,
+  USBD_COMBINED_HID_Setup,
+  NULL, /*EP0_TxSent*/
+  USBD_COMBINED_HID_EP0_RxReady, /*EP0_RxReady*/ /* STATUS STAGE IN */
+  USBD_COMBINED_HID_DataIn, /*DataIn*/
+  USBD_COMBINED_HID_DataOut,
+  NULL, /*SOF */
+  NULL,
+  NULL,
+  USBD_COMBINED_HID_GetHSCfgDesc,
+  USBD_COMBINED_HID_GetFSCfgDesc,
+  USBD_COMBINED_HID_GetOtherSpeedCfgDesc,
+  USBD_COMBINED_HID_GetDeviceQualifierDesc,
 };
 
 /* USB CUSTOM_HID device FS Configuration Descriptor */
@@ -745,6 +779,51 @@ static uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length)
 
   return USBD_CUSTOM_HID_DeviceQualifierDesc;
 }
+
+/// *** Combined *** ////
+static uint8_t USBD_COMBINED_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+{
+
+}
+static uint8_t USBD_COMBINED_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+{
+
+}
+static uint8_t USBD_COMBINED_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
+{
+
+}
+
+static uint8_t USBD_COMBINED_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
+{
+
+}
+static uint8_t USBD_COMBINED_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
+{
+
+}
+static uint8_t USBD_COMBINED_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev)
+{
+
+}
+
+static uint8_t *USBD_COMBINED_HID_GetFSCfgDesc(uint16_t *length)
+{
+
+}
+static uint8_t *USBD_COMBINED_HID_GetHSCfgDesc(uint16_t *length)
+{
+
+}
+static uint8_t *USBD_COMBINED_HID_GetOtherSpeedCfgDesc(uint16_t *length)
+{
+
+}
+static uint8_t *USBD_COMBINED_HID_GetDeviceQualifierDesc(uint16_t *length)
+{
+
+}
+/// *** Combined *** ////
 
 /**
   * @brief  USBD_CUSTOM_HID_RegisterInterface
