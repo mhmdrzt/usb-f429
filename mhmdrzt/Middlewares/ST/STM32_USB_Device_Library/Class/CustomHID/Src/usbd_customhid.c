@@ -783,11 +783,75 @@ static uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length)
 /// *** Combined *** ////
 static uint8_t USBD_COMBINED_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
+  UNUSED(cfgidx);
+  USBD_COMBINED_HID_HandleTypeDef *hhid;
 
+  hhid = USBD_malloc(sizeof(USBD_COMBINED_HID_HandleTypeDef));
+
+  if (hhid == NULL)
+  {
+    pdev->pClassData = NULL;
+    return (uint8_t)USBD_EMEM;
+  }
+
+  pdev->pClassData = (void *)hhid;
+
+  if (pdev->dev_speed == USBD_SPEED_HIGH)
+  {
+    pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].bInterval = COMBINED_HID_HS_BINTERVAL;
+    pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].bInterval = COMBINED_HID_HS_BINTERVAL;
+  }
+  else   /* LOW and FULL-speed endpoints */
+  {
+    pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].bInterval = COMBINED_HID_FS_BINTERVAL;
+    pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].bInterval = COMBINED_HID_FS_BINTERVAL;
+  }
+
+  /* Open EP IN */
+  (void)USBD_LL_OpenEP(pdev, COMBINED_HID_EPIN_ADDR, USBD_EP_TYPE_INTR,
+                       COMBINED_HID_EPIN_SIZE);
+
+  pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].is_used = 1U;
+
+  /* Open EP OUT */
+  (void)USBD_LL_OpenEP(pdev, COMBINED_HID_EPOUT_ADDR, USBD_EP_TYPE_INTR,
+                       COMBINED_HID_EPOUT_SIZE);
+
+  pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].is_used = 1U;
+
+  hhid->state = COMBINED_HID_IDLE;
+
+  ((USBD_COMBINED_HID_ItfTypeDef *)pdev->pUserData)->Init();
+
+  /* Prepare Out endpoint to receive 1st packet */
+  (void)USBD_LL_PrepareReceive(pdev, COMBINED_HID_EPOUT_ADDR, hhid->Report_buf,
+                               USBD_COMBINEDHID_OUTREPORT_BUF_SIZE);
+
+  return (uint8_t)USBD_OK;
 }
 static uint8_t USBD_COMBINED_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
+  UNUSED(cfgidx);
 
+  /* Close COMBINED_HID EP IN */
+  (void)USBD_LL_CloseEP(pdev, COMBINED_HID_EPIN_ADDR);
+  pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].is_used = 0U;
+  pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].bInterval = 0U;
+
+  /* Close COMBINED_HID EP OUT */
+  (void)USBD_LL_CloseEP(pdev, COMBINED_HID_EPOUT_ADDR);
+  pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].is_used = 0U;
+  pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].bInterval = 0U;
+
+  /* Free allocated memory */
+  if (pdev->pClassData != NULL)
+  {
+    ((USBD_COMBINED_HID_ItfTypeDef *)pdev->pUserData)->DeInit();
+    USBD_free(pdev->pClassData);
+    pdev->pClassData = NULL;
+  }
+
+  return (uint8_t)USBD_OK;
 }
 static uint8_t USBD_COMBINED_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
 {

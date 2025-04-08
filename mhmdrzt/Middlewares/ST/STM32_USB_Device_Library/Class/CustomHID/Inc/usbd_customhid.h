@@ -97,6 +97,12 @@ typedef enum
   CUSTOM_HID_BUSY,
 } CUSTOM_HID_StateTypeDef;
 
+typedef enum
+{
+  COMBINED_HID_IDLE = 0U,
+  COMBINED_HID_BUSY,
+} COMBINED_HID_StateTypeDef;
+
 typedef struct _USBD_CUSTOM_HID_Itf
 {
   uint8_t *pReport;
@@ -105,6 +111,15 @@ typedef struct _USBD_CUSTOM_HID_Itf
   int8_t (* OutEvent)(uint8_t event_idx, uint8_t state);
 
 } USBD_CUSTOM_HID_ItfTypeDef;
+
+typedef struct _USBD_COMBINED_HID_Itf
+{
+  uint8_t *pReport;
+  int8_t (* Init)(void);
+  int8_t (* DeInit)(void);
+  int8_t (* OutEvent)(uint8_t event_idx, uint8_t state);
+
+} USBD_COMBINED_HID_ItfTypeDef;
 
 typedef struct
 {
@@ -119,6 +134,15 @@ typedef struct
   * @}
   */
 
+  typedef struct
+{
+  uint8_t  Report_buf[USBD_CUSTOMHID_OUTREPORT_BUF_SIZE];
+  uint32_t Protocol;
+  uint32_t IdleState;
+  uint32_t AltSetting;
+  uint32_t IsReportAvailable;
+  COMBINED_HID_StateTypeDef state;
+} USBD_COMBINED_HID_HandleTypeDef;
 
 
 /** @defgroup USBD_CORE_Exported_Macros
