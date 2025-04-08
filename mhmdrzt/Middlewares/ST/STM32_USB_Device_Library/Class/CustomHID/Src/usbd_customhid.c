@@ -855,7 +855,123 @@ static uint8_t USBD_COMBINED_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx
 }
 static uint8_t USBD_COMBINED_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
 {
+  USBD_COMBINED_HID_HandleTypeDef *hhid = (USBD_COMBINED_HID_HandleTypeDef *)pdev->pClassData;
+  uint16_t len = 0U;
+  uint8_t  *pbuf = NULL;
+  uint16_t status_info = 0U;
+  USBD_StatusTypeDef ret = USBD_OK;
 
+  if (hhid == NULL)
+  {
+    return (uint8_t)USBD_FAIL;
+  }
+
+  switch (req->bmRequest & USB_REQ_TYPE_MASK)
+  {
+    case USB_REQ_TYPE_CLASS:
+      switch (req->bRequest)
+      {
+        case CUSTOM_HID_REQ_SET_PROTOCOL:
+          hhid->Protocol = (uint8_t)(req->wValue);
+          break;
+
+        case CUSTOM_HID_REQ_GET_PROTOCOL:
+          (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->Protocol, 1U);
+          break;
+
+        case CUSTOM_HID_REQ_SET_IDLE:
+          hhid->IdleState = (uint8_t)(req->wValue >> 8);
+          break;
+
+        case CUSTOM_HID_REQ_GET_IDLE:
+          (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->IdleState, 1U);
+          break;
+
+        case CUSTOM_HID_REQ_SET_REPORT:
+          hhid->IsReportAvailable = 1U;
+          (void)USBD_CtlPrepareRx(pdev, hhid->Report_buf, req->wLength);
+          break;
+
+        default:
+          USBD_CtlError(pdev, req);
+          ret = USBD_FAIL;
+          break;
+      }
+      break;
+
+    case USB_REQ_TYPE_STANDARD:
+      switch (req->bRequest)
+      {
+        case USB_REQ_GET_STATUS:
+          if (pdev->dev_state == USBD_STATE_CONFIGURED)
+          {
+            (void)USBD_CtlSendData(pdev, (uint8_t *)&status_info, 2U);
+          }
+          else
+          {
+            USBD_CtlError(pdev, req);
+            ret = USBD_FAIL;
+          }
+          break;
+
+        case USB_REQ_GET_DESCRIPTOR:
+          if ((req->wValue >> 8) == CUSTOM_HID_REPORT_DESC)
+          {
+            len = MIN(USBD_CUSTOM_HID_REPORT_DESC_SIZE, req->wLength);
+            pbuf = ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->pReport;
+          }
+          else
+          {
+            if ((req->wValue >> 8) == CUSTOM_HID_DESCRIPTOR_TYPE)
+            {
+              pbuf = USBD_CUSTOM_HID_Desc;
+              len = MIN(USB_CUSTOM_HID_DESC_SIZ, req->wLength);
+            }
+          }
+
+          (void)USBD_CtlSendData(pdev, pbuf, len);
+          break;
+
+        case USB_REQ_GET_INTERFACE:
+          if (pdev->dev_state == USBD_STATE_CONFIGURED)
+          {
+            (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->AltSetting, 1U);
+          }
+          else
+          {
+            USBD_CtlError(pdev, req);
+            ret = USBD_FAIL;
+          }
+          break;
+
+        case USB_REQ_SET_INTERFACE:
+          if (pdev->dev_state == USBD_STATE_CONFIGURED)
+          {
+            hhid->AltSetting = (uint8_t)(req->wValue);
+          }
+          else
+          {
+            USBD_CtlError(pdev, req);
+            ret = USBD_FAIL;
+          }
+          break;
+
+        case USB_REQ_CLEAR_FEATURE:
+          break;
+
+        default:
+          USBD_CtlError(pdev, req);
+          ret = USBD_FAIL;
+          break;
+      }
+      break;
+
+    default:
+      USBD_CtlError(pdev, req);
+      ret = USBD_FAIL;
+      break;
+  }
+  return (uint8_t)ret;
 }
 
 static uint8_t USBD_COMBINED_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)

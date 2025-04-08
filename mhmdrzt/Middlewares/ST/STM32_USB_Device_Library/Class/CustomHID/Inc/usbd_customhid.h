@@ -134,15 +134,13 @@ typedef struct
   * @}
   */
 
-  typedef struct
+#define USBD_HID_HandleTypeDef1 USBD_CUSTOM_HID_HandleTypeDef
+#define USBD_HID_HandleTypeDef1
+typedef struct
 {
-  uint8_t  Report_buf[USBD_CUSTOMHID_OUTREPORT_BUF_SIZE];
-  uint32_t Protocol;
-  uint32_t IdleState;
-  uint32_t AltSetting;
-  uint32_t IsReportAvailable;
-  COMBINED_HID_StateTypeDef state;
-} USBD_COMBINED_HID_HandleTypeDef;
+  USBD_HID_HandleTypeDef1 hid1;
+  USBD_HID_HandleTypeDef2 hid2;
+} USBD_COMBINED_HID_HandleTypeDef; // todo: make union
 
 
 /** @defgroup USBD_CORE_Exported_Macros
