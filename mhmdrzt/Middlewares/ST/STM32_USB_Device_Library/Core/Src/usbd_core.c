@@ -193,6 +193,37 @@ USBD_StatusTypeDef USBD_RegisterClass(USBD_HandleTypeDef *pdev, USBD_ClassTypeDe
   return USBD_OK;
 }
 
+USBD_StatusTypeDef USBD_RegisterClassForInterface(USBD_HandleTypeDef *pdev, int idx, USBD_ClassTypeDef *pclass)
+{
+  uint16_t len = 0U;
+
+  if (pclass == NULL)
+  {
+#if (USBD_DEBUG_LEVEL > 1U)
+    USBD_ErrLog("Invalid Class handle");
+#endif
+    return USBD_FAIL;
+  }
+
+  /* link the class to the USB Device handle */
+  pdev->pClass = pclass;
+
+  /* Get Device Configuration Descriptor */
+#ifdef USE_USB_HS
+  if (pdev->pClass->GetHSConfigDescriptor != NULL)
+  {
+    pdev->pConfDesc = (void *)pdev->pClass->GetHSConfigDescriptor(&len);
+  }
+#else /* Default USE_USB_FS */
+  if (pdev->pClass->GetFSConfigDescriptor != NULL)
+  {
+    pdev->pConfDesc = (void *)pdev->pClass->GetFSConfigDescriptor(&len);
+  }
+#endif /* USE_USB_FS */
+
+  return USBD_OK;
+}
+
 /**
   * @brief  USBD_Start
   *         Start the USB Device Core.

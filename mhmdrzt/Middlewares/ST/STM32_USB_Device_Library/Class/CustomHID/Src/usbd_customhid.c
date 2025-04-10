@@ -80,37 +80,37 @@ EndBSPDependencies */
 /**
   * @}
   */
-/** @defgroup USBD_CUSTOM_HID_Private_FunctionPrototypes
+/** @defgroup USBD_MOUSE_HID_Private_FunctionPrototypes
   * @{
   */
 
-static uint8_t USBD_CUSTOM_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
-static uint8_t USBD_CUSTOM_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
-static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
+static uint8_t USBD_MOUSE_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
+static uint8_t USBD_MOUSE_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
+static uint8_t USBD_MOUSE_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
 
-static uint8_t USBD_CUSTOM_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
-static uint8_t USBD_CUSTOM_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum);
-static uint8_t USBD_CUSTOM_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev);
+static uint8_t USBD_MOUSE_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
+static uint8_t USBD_MOUSE_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum);
+static uint8_t USBD_MOUSE_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev);
 
-static uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length);
-static uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length);
-static uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length);
-static uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length);
+static uint8_t *USBD_MOUSE_HID_GetFSCfgDesc(uint16_t *length);
+static uint8_t *USBD_MOUSE_HID_GetHSCfgDesc(uint16_t *length);
+static uint8_t *USBD_MOUSE_HID_GetOtherSpeedCfgDesc(uint16_t *length);
+static uint8_t *USBD_MOUSE_HID_GetDeviceQualifierDesc(uint16_t *length);
 
-/// *** Combined *** ////
-static uint8_t USBD_COMBINED_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
-static uint8_t USBD_COMBINED_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
-static uint8_t USBD_COMBINED_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
+/// *** MAMARZ *** ////
+static uint8_t USBD_MAMARZ_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
+static uint8_t USBD_MAMARZ_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
+static uint8_t USBD_MAMARZ_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
 
-static uint8_t USBD_COMBINED_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
-static uint8_t USBD_COMBINED_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum);
-static uint8_t USBD_COMBINED_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev);
+static uint8_t USBD_MAMARZ_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum);
+static uint8_t USBD_MAMARZ_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum);
+static uint8_t USBD_MAMARZ_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev);
 
-static uint8_t *USBD_COMBINED_HID_GetFSCfgDesc(uint16_t *length);
-static uint8_t *USBD_COMBINED_HID_GetHSCfgDesc(uint16_t *length);
-static uint8_t *USBD_COMBINED_HID_GetOtherSpeedCfgDesc(uint16_t *length);
-static uint8_t *USBD_COMBINED_HID_GetDeviceQualifierDesc(uint16_t *length);
-/// *** Combined *** ////
+static uint8_t *USBD_MAMARZ_HID_GetFSCfgDesc(uint16_t *length);
+static uint8_t *USBD_MAMARZ_HID_GetHSCfgDesc(uint16_t *length);
+static uint8_t *USBD_MAMARZ_HID_GetOtherSpeedCfgDesc(uint16_t *length);
+static uint8_t *USBD_MAMARZ_HID_GetDeviceQualifierDesc(uint16_t *length);
+/// *** MAMARZ *** ////
 
 
 /**
@@ -121,44 +121,56 @@ static uint8_t *USBD_COMBINED_HID_GetDeviceQualifierDesc(uint16_t *length);
   * @{
   */
 
-USBD_ClassTypeDef  USBD_CUSTOM_HID =
+USBD_ClassTypeDef  USBD_HID_MOUSE =
 {
-  USBD_CUSTOM_HID_Init,
-  USBD_CUSTOM_HID_DeInit,
-  USBD_CUSTOM_HID_Setup,
+  USBD_MOUSE_HID_Init,
+  USBD_MOUSE_HID_DeInit,
+  USBD_MOUSE_HID_Setup,
   NULL, /*EP0_TxSent*/
-  USBD_CUSTOM_HID_EP0_RxReady, /*EP0_RxReady*/ /* STATUS STAGE IN */
-  USBD_CUSTOM_HID_DataIn, /*DataIn*/
-  USBD_CUSTOM_HID_DataOut,
+  USBD_MOUSE_HID_EP0_RxReady, /*EP0_RxReady*/ /* STATUS STAGE IN */
+  USBD_MOUSE_HID_DataIn, /*DataIn*/
+  USBD_MOUSE_HID_DataOut,
   NULL, /*SOF */
   NULL,
   NULL,
-  USBD_CUSTOM_HID_GetHSCfgDesc,
-  USBD_CUSTOM_HID_GetFSCfgDesc,
-  USBD_CUSTOM_HID_GetOtherSpeedCfgDesc,
-  USBD_CUSTOM_HID_GetDeviceQualifierDesc,
+  USBD_MOUSE_HID_GetHSCfgDesc,
+  USBD_MOUSE_HID_GetFSCfgDesc,
+  USBD_MOUSE_HID_GetOtherSpeedCfgDesc,
+  USBD_MOUSE_HID_GetDeviceQualifierDesc,
 };
 
-USBD_ClassTypeDef USBD_COMBINED_HID = 
+USBD_ClassTypeDef  USBD_MAMARZ_HID =
 {
-  USBD_COMBINED_HID_Init,
-  USBD_COMBINED_HID_DeInit,
-  USBD_COMBINED_HID_Setup,
+  USBD_MAMARZ_HID_Init,
+  USBD_MAMARZ_HID_DeInit,
+  USBD_MAMARZ_HID_Setup,
   NULL, /*EP0_TxSent*/
-  USBD_COMBINED_HID_EP0_RxReady, /*EP0_RxReady*/ /* STATUS STAGE IN */
-  USBD_COMBINED_HID_DataIn, /*DataIn*/
-  USBD_COMBINED_HID_DataOut,
+  USBD_MAMARZ_HID_EP0_RxReady, /*EP0_RxReady*/ /* STATUS STAGE IN */
+  USBD_MAMARZ_HID_DataIn, /*DataIn*/
+  USBD_MAMARZ_HID_DataOut,
   NULL, /*SOF */
   NULL,
   NULL,
-  USBD_COMBINED_HID_GetHSCfgDesc,
-  USBD_COMBINED_HID_GetFSCfgDesc,
-  USBD_COMBINED_HID_GetOtherSpeedCfgDesc,
-  USBD_COMBINED_HID_GetDeviceQualifierDesc,
+  USBD_MAMARZ_HID_GetHSCfgDesc,
+  USBD_MAMARZ_HID_GetFSCfgDesc,
+  USBD_MAMARZ_HID_GetOtherSpeedCfgDesc,
+  USBD_MAMARZ_HID_GetDeviceQualifierDesc,
+};
+
+#define USBD_HID_CUSTOM USBD_CUSTOM_HID
+
+#define USBD_HID_0 USBD_HID_MOUSE
+#define USBD_HID_1 USBD_HID_CUSTOM
+
+USBD_ClassTypeDef *USBD_COMBINED_HID[]= 
+{
+  &USBD_HID_0,
+  &USBD_HID_1,
+  NULL
 };
 
 /* USB CUSTOM_HID device FS Configuration Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgFSDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
+__ALIGN_BEGIN static uint8_t USBD_MOUSE_HID_CfgFSDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
 {
   0x09,                                               /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,                        /* bDescriptorType: Configuration */
@@ -219,7 +231,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgFSDesc[USB_CUSTOM_HID_CONFIG_DES
 };
 
 /* USB CUSTOM_HID device HS Configuration Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgHSDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
+__ALIGN_BEGIN static uint8_t USBD_MOUSE_HID_CfgHSDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
 {
   0x09,                                               /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,                        /* bDescriptorType: Configuration */
@@ -280,7 +292,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgHSDesc[USB_CUSTOM_HID_CONFIG_DES
 };
 
 /* USB CUSTOM_HID device Other Speed Configuration Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_OtherSpeedCfgDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
+__ALIGN_BEGIN static uint8_t USBD_MOUSE_HID_OtherSpeedCfgDesc[USB_CUSTOM_HID_CONFIG_DESC_SIZ] __ALIGN_END =
 {
   0x09,                                               /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,                        /* bDescriptorType: Configuration */
@@ -341,7 +353,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_OtherSpeedCfgDesc[USB_CUSTOM_HID_CO
 };
 
 /* USB CUSTOM_HID device Configuration Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_Desc[USB_CUSTOM_HID_DESC_SIZ] __ALIGN_END =
+__ALIGN_BEGIN static uint8_t USBD_MOUSE_HID_Desc[USB_CUSTOM_HID_DESC_SIZ] __ALIGN_END =
 {
   /* 18 */
   0x09,                                               /* bLength: CUSTOM_HID Descriptor size */
@@ -356,7 +368,7 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_Desc[USB_CUSTOM_HID_DESC_SIZ] __ALI
 };
 
 /* USB Standard Device Descriptor */
-__ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC] __ALIGN_END =
+__ALIGN_BEGIN static uint8_t USBD_MOUSE_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_DESC] __ALIGN_END =
 {
   USB_LEN_DEV_QUALIFIER_DESC,
   USB_DESC_TYPE_DEVICE_QUALIFIER,
@@ -385,12 +397,12 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_DeviceQualifierDesc[USB_LEN_DEV_QUA
   * @param  cfgidx: Configuration index
   * @retval status
   */
-static uint8_t USBD_CUSTOM_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+static uint8_t USBD_MOUSE_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
   UNUSED(cfgidx);
-  USBD_CUSTOM_HID_HandleTypeDef *hhid;
+  USBD_MOUSE_HID_HandleTypeDef *hhid;
 
-  hhid = USBD_malloc(sizeof(USBD_CUSTOM_HID_HandleTypeDef));
+  hhid = USBD_malloc(sizeof(USBD_MOUSE_HID_HandleTypeDef));
 
   if (hhid == NULL)
   {
@@ -441,7 +453,7 @@ static uint8_t USBD_CUSTOM_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   * @param  cfgidx: Configuration index
   * @retval status
   */
-static uint8_t USBD_CUSTOM_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+static uint8_t USBD_MOUSE_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
   UNUSED(cfgidx);
 
@@ -473,7 +485,7 @@ static uint8_t USBD_CUSTOM_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   * @param  req: usb requests
   * @retval status
   */
-static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
+static uint8_t USBD_MOUSE_HID_Setup(USBD_HandleTypeDef *pdev,
                                      USBD_SetupReqTypedef *req)
 {
   USBD_CUSTOM_HID_HandleTypeDef *hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
@@ -596,13 +608,13 @@ static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
 }
 
 /**
-  * @brief  USBD_CUSTOM_HID_SendReport
-  *         Send CUSTOM_HID Report
+  * @brief  USBD_MOUSE_HID_SendReport
+  *         Send MOUSE_HID Report
   * @param  pdev: device instance
   * @param  buff: pointer to report
   * @retval status
   */
-uint8_t USBD_CUSTOM_HID_SendReport(USBD_HandleTypeDef *pdev,
+uint8_t USBD_MOUSE_HID_SendReport(USBD_HandleTypeDef *pdev,
                                    uint8_t *report, uint16_t len)
 {
   USBD_CUSTOM_HID_HandleTypeDef *hhid;
@@ -636,7 +648,7 @@ uint8_t USBD_CUSTOM_HID_SendReport(USBD_HandleTypeDef *pdev,
   * @param  length : pointer data length
   * @retval pointer to descriptor buffer
   */
-static uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length)
+static uint8_t *USBD_MOUSE_HID_GetFSCfgDesc(uint16_t *length)
 {
   *length = (uint16_t)sizeof(USBD_CUSTOM_HID_CfgFSDesc);
 
@@ -650,7 +662,7 @@ static uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length)
   * @param  length : pointer data length
   * @retval pointer to descriptor buffer
   */
-static uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length)
+static uint8_t *USBD_MOUSE_HID_GetHSCfgDesc(uint16_t *length)
 {
   *length = (uint16_t)sizeof(USBD_CUSTOM_HID_CfgHSDesc);
 
@@ -664,7 +676,7 @@ static uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length)
   * @param  length : pointer data length
   * @retval pointer to descriptor buffer
   */
-static uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length)
+static uint8_t *USBD_MOUSE_HID_GetOtherSpeedCfgDesc(uint16_t *length)
 {
   *length = (uint16_t)sizeof(USBD_CUSTOM_HID_OtherSpeedCfgDesc);
 
@@ -678,7 +690,7 @@ static uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length)
   * @param  epnum: endpoint index
   * @retval status
   */
-static uint8_t USBD_CUSTOM_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
+static uint8_t USBD_MOUSE_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
   UNUSED(epnum);
 
@@ -696,7 +708,7 @@ static uint8_t USBD_CUSTOM_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
   * @param  epnum: endpoint index
   * @retval status
   */
-static uint8_t USBD_CUSTOM_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
+static uint8_t USBD_MOUSE_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
   UNUSED(epnum);
   USBD_CUSTOM_HID_HandleTypeDef *hhid;
@@ -723,7 +735,7 @@ static uint8_t USBD_CUSTOM_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
   * @param  pdev: device instance
   * @retval status
   */
-uint8_t USBD_CUSTOM_HID_ReceivePacket(USBD_HandleTypeDef *pdev)
+uint8_t USBD_MOUSE_HID_ReceivePacket(USBD_HandleTypeDef *pdev)
 {
   USBD_CUSTOM_HID_HandleTypeDef *hhid;
 
@@ -748,7 +760,7 @@ uint8_t USBD_CUSTOM_HID_ReceivePacket(USBD_HandleTypeDef *pdev)
   * @param  pdev: device instance
   * @retval status
   */
-static uint8_t USBD_CUSTOM_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
+static uint8_t USBD_MOUSE_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
 {
   USBD_CUSTOM_HID_HandleTypeDef *hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
 
@@ -773,15 +785,15 @@ static uint8_t USBD_CUSTOM_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
   * @param  length : pointer data length
   * @retval pointer to descriptor buffer
   */
-static uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length)
+static uint8_t *USBD_MOUSE_HID_GetDeviceQualifierDesc(uint16_t *length)
 {
   *length = (uint16_t)sizeof(USBD_CUSTOM_HID_DeviceQualifierDesc);
 
   return USBD_CUSTOM_HID_DeviceQualifierDesc;
 }
 
-/// *** Combined *** ////
-static uint8_t USBD_COMBINED_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+/// *** MAMARZ *** ////
+static uint8_t USBD_MAMARZ_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
   UNUSED(cfgidx);
   USBD_COMBINED_HID_HandleTypeDef *hhid;
@@ -829,7 +841,7 @@ static uint8_t USBD_COMBINED_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 
   return (uint8_t)USBD_OK;
 }
-static uint8_t USBD_COMBINED_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+static uint8_t USBD_MAMARZ_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
   UNUSED(cfgidx);
 
@@ -853,7 +865,7 @@ static uint8_t USBD_COMBINED_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx
 
   return (uint8_t)USBD_OK;
 }
-static uint8_t USBD_COMBINED_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
+static uint8_t USBD_MAMARZ_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
 {
   USBD_COMBINED_HID_HandleTypeDef *hhid = (USBD_COMBINED_HID_HandleTypeDef *)pdev->pClassData;
   uint16_t len = 0U;
@@ -974,36 +986,36 @@ static uint8_t USBD_COMBINED_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTy
   return (uint8_t)ret;
 }
 
-static uint8_t USBD_COMBINED_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
+static uint8_t USBD_MAMARZ_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
 
 }
-static uint8_t USBD_COMBINED_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
+static uint8_t USBD_MAMARZ_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
 
 }
-static uint8_t USBD_COMBINED_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev)
+static uint8_t USBD_MAMARZ_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev)
 {
 
 }
 
-static uint8_t *USBD_COMBINED_HID_GetFSCfgDesc(uint16_t *length)
+static uint8_t *USBD_MAMARZ_HID_GetFSCfgDesc(uint16_t *length)
 {
 
 }
-static uint8_t *USBD_COMBINED_HID_GetHSCfgDesc(uint16_t *length)
+static uint8_t *USBD_MAMARZ_HID_GetHSCfgDesc(uint16_t *length)
 {
 
 }
-static uint8_t *USBD_COMBINED_HID_GetOtherSpeedCfgDesc(uint16_t *length)
+static uint8_t *USBD_MAMARZ_HID_GetOtherSpeedCfgDesc(uint16_t *length)
 {
 
 }
-static uint8_t *USBD_COMBINED_HID_GetDeviceQualifierDesc(uint16_t *length)
+static uint8_t *USBD_MAMARZ_HID_GetDeviceQualifierDesc(uint16_t *length)
 {
 
 }
-/// *** Combined *** ////
+/// *** MAMARZ *** ////
 
 /**
   * @brief  USBD_CUSTOM_HID_RegisterInterface

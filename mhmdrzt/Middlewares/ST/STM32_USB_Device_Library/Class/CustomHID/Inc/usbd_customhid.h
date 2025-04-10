@@ -129,18 +129,28 @@ typedef struct
   uint32_t AltSetting;
   uint32_t IsReportAvailable;
   CUSTOM_HID_StateTypeDef state;
-} USBD_CUSTOM_HID_HandleTypeDef;
+} USBD_MOUSE_HID_HandleTypeDef;
+
+typedef struct
+{
+  uint8_t  Report_buf[USBD_CUSTOMHID_OUTREPORT_BUF_SIZE];
+  uint32_t Protocol;
+  uint32_t IdleState;
+  uint32_t AltSetting;
+  uint32_t IsReportAvailable;
+  CUSTOM_HID_StateTypeDef state;
+} USBD_MAMARZ_HID_HandleTypeDef;
 /**
   * @}
   */
 
-#define USBD_HID_HandleTypeDef1 USBD_CUSTOM_HID_HandleTypeDef
-#define USBD_HID_HandleTypeDef1
-typedef struct
-{
-  USBD_HID_HandleTypeDef1 hid1;
-  USBD_HID_HandleTypeDef2 hid2;
-} USBD_COMBINED_HID_HandleTypeDef; // todo: make union
+//#define USBD_HID_HandleTypeDef1 USBD_CUSTOM_HID_HandleTypeDef
+//#define USBD_HID_HandleTypeDef1
+//typedef struct
+//{
+//  USBD_HID_HandleTypeDef1 hid1;
+//  USBD_HID_HandleTypeDef2 hid2;
+//} USBD_COMBINED_HID_HandleTypeDef; // todo: make union
 
 
 /** @defgroup USBD_CORE_Exported_Macros
@@ -156,7 +166,7 @@ typedef struct
   */
 
 extern USBD_ClassTypeDef USBD_CUSTOM_HID;
-extern USBD_ClassTypeDef USBD_COMBINED_HID;
+extern USBD_ClassTypeDef *USBD_COMBINED_HID[];
 #define USBD_CUSTOM_HID_CLASS &USBD_CUSTOM_HID
 /**
   * @}

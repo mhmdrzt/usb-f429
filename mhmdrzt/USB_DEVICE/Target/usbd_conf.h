@@ -63,8 +63,12 @@
   * @{
   */
 
+
+#define HID_MOUSE_INTERFACE        0  // Interface 0 for Mouse
+#define HID_CUSTOM_INTERFACE       1  // Interface 1 for Custom HID
+
 /*---------- -----------*/
-#define USBD_MAX_NUM_INTERFACES     1U
+#define USBD_MAX_NUM_INTERFACES     2U
 /*---------- -----------*/
 #define USBD_MAX_NUM_CONFIGURATION     1U
 /*---------- -----------*/
