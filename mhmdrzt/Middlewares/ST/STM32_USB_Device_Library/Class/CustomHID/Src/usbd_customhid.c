@@ -414,34 +414,34 @@ static uint8_t USBD_MOUSE_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 
   if (pdev->dev_speed == USBD_SPEED_HIGH)
   {
-    pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].bInterval = CUSTOM_HID_HS_BINTERVAL;
-    pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].bInterval = CUSTOM_HID_HS_BINTERVAL;
+    pdev->ep_in[MOUSE_HID_EPIN_ADDR & 0xFU].bInterval = MOUSE_HID_HS_BINTERVAL;
+    pdev->ep_out[MOUSE_HID_EPOUT_ADDR & 0xFU].bInterval = MOUSE_HID_HS_BINTERVAL;
   }
   else   /* LOW and FULL-speed endpoints */
   {
-    pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].bInterval = CUSTOM_HID_FS_BINTERVAL;
-    pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].bInterval = CUSTOM_HID_FS_BINTERVAL;
+    pdev->ep_in[MOUSE_HID_EPIN_ADDR & 0xFU].bInterval = MOUSE_HID_FS_BINTERVAL;
+    pdev->ep_out[MOUSE_HID_EPOUT_ADDR & 0xFU].bInterval = MOUSE_HID_FS_BINTERVAL;
   }
 
   /* Open EP IN */
-  (void)USBD_LL_OpenEP(pdev, CUSTOM_HID_EPIN_ADDR, USBD_EP_TYPE_INTR,
-                       CUSTOM_HID_EPIN_SIZE);
+  (void)USBD_LL_OpenEP(pdev, MOUSE_HID_EPIN_ADDR, USBD_EP_TYPE_INTR,
+                       MOUSE_HID_EPIN_SIZE);
 
-  pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].is_used = 1U;
+  pdev->ep_in[MOUSE_HID_EPIN_ADDR & 0xFU].is_used = 1U;
 
   /* Open EP OUT */
-  (void)USBD_LL_OpenEP(pdev, CUSTOM_HID_EPOUT_ADDR, USBD_EP_TYPE_INTR,
-                       CUSTOM_HID_EPOUT_SIZE);
+  (void)USBD_LL_OpenEP(pdev, MOUSE_HID_EPOUT_ADDR, USBD_EP_TYPE_INTR,
+                       MOUSE_HID_EPOUT_SIZE);
 
-  pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].is_used = 1U;
+  pdev->ep_out[MOUSE_HID_EPOUT_ADDR & 0xFU].is_used = 1U;
 
-  hhid->state = CUSTOM_HID_IDLE;
+  hhid->state = MOUSE_HID_IDLE;
 
-  ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->Init();
+  ((USBD_MOUSE_HID_ItfTypeDef *)pdev->pUserData)->Init();
 
   /* Prepare Out endpoint to receive 1st packet */
-  (void)USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf,
-                               USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
+  (void)USBD_LL_PrepareReceive(pdev, MOUSE_HID_EPOUT_ADDR, hhid->Report_buf,
+                               USBD_MOUSE_HID_OUTREPORT_BUF_SIZE);
 
   return (uint8_t)USBD_OK;
 }
@@ -457,20 +457,20 @@ static uint8_t USBD_MOUSE_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
   UNUSED(cfgidx);
 
-  /* Close CUSTOM_HID EP IN */
-  (void)USBD_LL_CloseEP(pdev, CUSTOM_HID_EPIN_ADDR);
-  pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].is_used = 0U;
-  pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].bInterval = 0U;
+  /* Close MOUSE_HID EP IN */
+  (void)USBD_LL_CloseEP(pdev, MOUSE_HID_EPIN_ADDR);
+  pdev->ep_in[MOUSE_HID_EPIN_ADDR & 0xFU].is_used = 0U;
+  pdev->ep_in[MOUSE_HID_EPIN_ADDR & 0xFU].bInterval = 0U;
 
-  /* Close CUSTOM_HID EP OUT */
-  (void)USBD_LL_CloseEP(pdev, CUSTOM_HID_EPOUT_ADDR);
-  pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].is_used = 0U;
-  pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].bInterval = 0U;
+  /* Close MOUSE_HID EP OUT */
+  (void)USBD_LL_CloseEP(pdev, MOUSE_HID_EPOUT_ADDR);
+  pdev->ep_out[MOUSE_HID_EPOUT_ADDR & 0xFU].is_used = 0U;
+  pdev->ep_out[MOUSE_HID_EPOUT_ADDR & 0xFU].bInterval = 0U;
 
   /* Free allocated memory */
   if (pdev->pClassData != NULL)
   {
-    ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->DeInit();
+    ((USBD_MOUSE_HID_ItfTypeDef *)pdev->pUserData)->DeInit();
     USBD_free(pdev->pClassData);
     pdev->pClassData = NULL;
   }
@@ -488,7 +488,7 @@ static uint8_t USBD_MOUSE_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 static uint8_t USBD_MOUSE_HID_Setup(USBD_HandleTypeDef *pdev,
                                      USBD_SetupReqTypedef *req)
 {
-  USBD_CUSTOM_HID_HandleTypeDef *hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
+  USBD_MOUSE_HID_HandleTypeDef *hhid = (USBD_MOUSE_HID_HandleTypeDef *)pdev->pClassData;
   uint16_t len = 0U;
   uint8_t  *pbuf = NULL;
   uint16_t status_info = 0U;
@@ -504,23 +504,23 @@ static uint8_t USBD_MOUSE_HID_Setup(USBD_HandleTypeDef *pdev,
     case USB_REQ_TYPE_CLASS:
       switch (req->bRequest)
       {
-        case CUSTOM_HID_REQ_SET_PROTOCOL:
+        case MOUSE_HID_REQ_SET_PROTOCOL:
           hhid->Protocol = (uint8_t)(req->wValue);
           break;
 
-        case CUSTOM_HID_REQ_GET_PROTOCOL:
+        case MOUSE_HID_REQ_GET_PROTOCOL:
           (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->Protocol, 1U);
           break;
 
-        case CUSTOM_HID_REQ_SET_IDLE:
+        case MOUSE_HID_REQ_SET_IDLE:
           hhid->IdleState = (uint8_t)(req->wValue >> 8);
           break;
 
-        case CUSTOM_HID_REQ_GET_IDLE:
+        case MOUSE_HID_REQ_GET_IDLE:
           (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->IdleState, 1U);
           break;
 
-        case CUSTOM_HID_REQ_SET_REPORT:
+        case MOUSE_HID_REQ_SET_REPORT:
           hhid->IsReportAvailable = 1U;
           (void)USBD_CtlPrepareRx(pdev, hhid->Report_buf, req->wLength);
           break;
@@ -548,17 +548,17 @@ static uint8_t USBD_MOUSE_HID_Setup(USBD_HandleTypeDef *pdev,
           break;
 
         case USB_REQ_GET_DESCRIPTOR:
-          if ((req->wValue >> 8) == CUSTOM_HID_REPORT_DESC)
+          if ((req->wValue >> 8) == MOUSE_HID_REPORT_DESC)
           {
-            len = MIN(USBD_CUSTOM_HID_REPORT_DESC_SIZE, req->wLength);
-            pbuf = ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->pReport;
+            len = MIN(USBD_MOUSE_HID_REPORT_DESC_SIZE, req->wLength);
+            pbuf = ((USBD_MOUSE_HID_ItfTypeDef *)pdev->pUserData)->pReport;
           }
           else
           {
-            if ((req->wValue >> 8) == CUSTOM_HID_DESCRIPTOR_TYPE)
+            if ((req->wValue >> 8) == MOUSE_HID_DESCRIPTOR_TYPE)
             {
-              pbuf = USBD_CUSTOM_HID_Desc;
-              len = MIN(USB_CUSTOM_HID_DESC_SIZ, req->wLength);
+              pbuf = USBD_MOUSE_HID_Desc;
+              len = MIN(USB_MOUSE_HID_DESC_SIZ, req->wLength);
             }
           }
 
@@ -617,21 +617,21 @@ static uint8_t USBD_MOUSE_HID_Setup(USBD_HandleTypeDef *pdev,
 uint8_t USBD_MOUSE_HID_SendReport(USBD_HandleTypeDef *pdev,
                                    uint8_t *report, uint16_t len)
 {
-  USBD_CUSTOM_HID_HandleTypeDef *hhid;
+  USBD_MOUSE_HID_HandleTypeDef *hhid;
 
   if (pdev->pClassData == NULL)
   {
     return (uint8_t)USBD_FAIL;
   }
 
-  hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
+  hhid = (USBD_MOUSE_HID_HandleTypeDef *)pdev->pClassData;
 
   if (pdev->dev_state == USBD_STATE_CONFIGURED)
   {
-    if (hhid->state == CUSTOM_HID_IDLE)
+    if (hhid->state == MOUSE_HID_IDLE)
     {
       hhid->state = CUSTOM_HID_BUSY;
-      (void)USBD_LL_Transmit(pdev, CUSTOM_HID_EPIN_ADDR, report, len);
+      (void)USBD_LL_Transmit(pdev, MOUSE_HID_EPIN_ADDR, report, len);
     }
     else
     {
@@ -650,9 +650,9 @@ uint8_t USBD_MOUSE_HID_SendReport(USBD_HandleTypeDef *pdev,
   */
 static uint8_t *USBD_MOUSE_HID_GetFSCfgDesc(uint16_t *length)
 {
-  *length = (uint16_t)sizeof(USBD_CUSTOM_HID_CfgFSDesc);
+  *length = (uint16_t)sizeof(USBD_MOUSE_HID_CfgFSDesc);
 
-  return USBD_CUSTOM_HID_CfgFSDesc;
+  return USBD_MOUSE_HID_CfgFSDesc;
 }
 
 /**
@@ -664,9 +664,9 @@ static uint8_t *USBD_MOUSE_HID_GetFSCfgDesc(uint16_t *length)
   */
 static uint8_t *USBD_MOUSE_HID_GetHSCfgDesc(uint16_t *length)
 {
-  *length = (uint16_t)sizeof(USBD_CUSTOM_HID_CfgHSDesc);
+  *length = (uint16_t)sizeof(USBD_MOUSE_HID_CfgHSDesc);
 
-  return USBD_CUSTOM_HID_CfgHSDesc;
+  return USBD_MOUSE_HID_CfgHSDesc;
 }
 
 /**
@@ -678,9 +678,9 @@ static uint8_t *USBD_MOUSE_HID_GetHSCfgDesc(uint16_t *length)
   */
 static uint8_t *USBD_MOUSE_HID_GetOtherSpeedCfgDesc(uint16_t *length)
 {
-  *length = (uint16_t)sizeof(USBD_CUSTOM_HID_OtherSpeedCfgDesc);
+  *length = (uint16_t)sizeof(USBD_MOUSE_HID_OtherSpeedCfgDesc);
 
-  return USBD_CUSTOM_HID_OtherSpeedCfgDesc;
+  return USBD_MOUSE_HID_OtherSpeedCfgDesc;
 }
 
 /**
@@ -696,7 +696,7 @@ static uint8_t USBD_MOUSE_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 
   /* Ensure that the FIFO is empty before a new transfer, this condition could
   be caused by  a new transfer before the end of the previous transfer */
-  ((USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData)->state = CUSTOM_HID_IDLE;
+  ((USBD_MOUSE_HID_HandleTypeDef *)pdev->pClassData)->state = MOUSE_HID_IDLE;
 
   return (uint8_t)USBD_OK;
 }
@@ -711,18 +711,18 @@ static uint8_t USBD_MOUSE_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 static uint8_t USBD_MOUSE_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
   UNUSED(epnum);
-  USBD_CUSTOM_HID_HandleTypeDef *hhid;
+  USBD_MOUSE_HID_HandleTypeDef *hhid;
 
   if (pdev->pClassData == NULL)
   {
     return (uint8_t)USBD_FAIL;
   }
 
-  hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
+  hhid = (USBD_MOUSE_HID_HandleTypeDef *)pdev->pClassData;
 
   /* USB data will be immediately processed, this allow next USB traffic being
   NAKed till the end of the application processing */
-  ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
+  ((USBD_MOUSE_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
                                                             hhid->Report_buf[1]);
 
   return (uint8_t)USBD_OK;
@@ -737,18 +737,18 @@ static uint8_t USBD_MOUSE_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
   */
 uint8_t USBD_MOUSE_HID_ReceivePacket(USBD_HandleTypeDef *pdev)
 {
-  USBD_CUSTOM_HID_HandleTypeDef *hhid;
+  USBD_MOUSE_HID_HandleTypeDef *hhid;
 
   if (pdev->pClassData == NULL)
   {
     return (uint8_t)USBD_FAIL;
   }
 
-  hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
+  hhid = (USBD_MOUSE_HID_HandleTypeDef *)pdev->pClassData;
 
   /* Resume USB Out process */
-  (void)USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf,
-                               USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
+  (void)USBD_LL_PrepareReceive(pdev, MOUSE_HID_EPOUT_ADDR, hhid->Report_buf,
+                               USBD_MOUSE_HID_OUTREPORT_BUF_SIZE);
 
   return (uint8_t)USBD_OK;
 }
@@ -762,7 +762,7 @@ uint8_t USBD_MOUSE_HID_ReceivePacket(USBD_HandleTypeDef *pdev)
   */
 static uint8_t USBD_MOUSE_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
 {
-  USBD_CUSTOM_HID_HandleTypeDef *hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
+  USBD_MOUSE_HID_HandleTypeDef *hhid = (USBD_MOUSE_HID_HandleTypeDef *)pdev->pClassData;
 
   if (hhid == NULL)
   {
@@ -771,7 +771,7 @@ static uint8_t USBD_MOUSE_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
 
   if (hhid->IsReportAvailable == 1U)
   {
-    ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
+    ((USBD_MOUSE_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
                                                               hhid->Report_buf[1]);
     hhid->IsReportAvailable = 0U;
   }
@@ -787,234 +787,416 @@ static uint8_t USBD_MOUSE_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
   */
 static uint8_t *USBD_MOUSE_HID_GetDeviceQualifierDesc(uint16_t *length)
 {
-  *length = (uint16_t)sizeof(USBD_CUSTOM_HID_DeviceQualifierDesc);
+  *length = (uint16_t)sizeof(USBD_MOUSE_HID_DeviceQualifierDesc);
 
-  return USBD_CUSTOM_HID_DeviceQualifierDesc;
+  return USBD_MOUSE_HID_DeviceQualifierDesc;
 }
 
 /// *** MAMARZ *** ////
-static uint8_t USBD_MAMARZ_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
-{
-  UNUSED(cfgidx);
-  USBD_COMBINED_HID_HandleTypeDef *hhid;
 
-  hhid = USBD_malloc(sizeof(USBD_COMBINED_HID_HandleTypeDef));
+/**
+  * @brief  USBD_CUSTOM_HID_Init
+  *         Initialize the CUSTOM_HID interface
+  * @param  pdev: device instance
+  * @param  cfgidx: Configuration index
+  * @retval status
+  */
+ static uint8_t USBD_MAMARZ_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+ {
+   UNUSED(cfgidx);
+   USBD_MAMARZ_HID_HandleTypeDef *hhid;
+ 
+   hhid = USBD_malloc(sizeof(USBD_MAMARZ_HID_HandleTypeDef));
+ 
+   if (hhid == NULL)
+   {
+     pdev->pClassData = NULL;
+     return (uint8_t)USBD_EMEM;
+   }
+ 
+   pdev->pClassData = (void *)hhid;
+ 
+   if (pdev->dev_speed == USBD_SPEED_HIGH)
+   {
+     pdev->ep_in[MAMARZ_HID_EPIN_ADDR & 0xFU].bInterval = MAMARZ_HID_HS_BINTERVAL;
+     pdev->ep_out[MAMARZ_HID_EPOUT_ADDR & 0xFU].bInterval = MAMARZ_HID_HS_BINTERVAL;
+   }
+   else   /* LOW and FULL-speed endpoints */
+   {
+     pdev->ep_in[MAMARZ_HID_EPIN_ADDR & 0xFU].bInterval = MAMARZ_HID_FS_BINTERVAL;
+     pdev->ep_out[MAMARZ_HID_EPOUT_ADDR & 0xFU].bInterval = MAMARZ_HID_FS_BINTERVAL;
+   }
+ 
+   /* Open EP IN */
+   (void)USBD_LL_OpenEP(pdev, MAMARZ_HID_EPIN_ADDR, USBD_EP_TYPE_INTR,
+                        MAMARZ_HID_EPIN_SIZE);
+ 
+   pdev->ep_in[MAMARZ_HID_EPIN_ADDR & 0xFU].is_used = 1U;
+ 
+   /* Open EP OUT */
+   (void)USBD_LL_OpenEP(pdev, MAMARZ_HID_EPOUT_ADDR, USBD_EP_TYPE_INTR,
+                        MAMARZ_HID_EPOUT_SIZE);
+ 
+   pdev->ep_out[MAMARZ_HID_EPOUT_ADDR & 0xFU].is_used = 1U;
+ 
+   hhid->state = MAMARZ_HID_IDLE;
+ 
+   ((USBD_MAMARZ_HID_ItfTypeDef *)pdev->pUserData)->Init();
+ 
+   /* Prepare Out endpoint to receive 1st packet */
+   (void)USBD_LL_PrepareReceive(pdev, MAMARZ_HID_EPOUT_ADDR, hhid->Report_buf,
+                                USBD_MAMARZ_HID_OUTREPORT_BUF_SIZE);
+ 
+   return (uint8_t)USBD_OK;
+ }
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_Init
+   *         DeInitialize the CUSTOM_HID layer
+   * @param  pdev: device instance
+   * @param  cfgidx: Configuration index
+   * @retval status
+   */
+ static uint8_t USBD_MAMARZ_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
+ {
+   UNUSED(cfgidx);
+ 
+   /* Close MAMARZ_HID EP IN */
+   (void)USBD_LL_CloseEP(pdev, MAMARZ_HID_EPIN_ADDR);
+   pdev->ep_in[MAMARZ_HID_EPIN_ADDR & 0xFU].is_used = 0U;
+   pdev->ep_in[MAMARZ_HID_EPIN_ADDR & 0xFU].bInterval = 0U;
+ 
+   /* Close MAMARZ_HID EP OUT */
+   (void)USBD_LL_CloseEP(pdev, MAMARZ_HID_EPOUT_ADDR);
+   pdev->ep_out[MAMARZ_HID_EPOUT_ADDR & 0xFU].is_used = 0U;
+   pdev->ep_out[MAMARZ_HID_EPOUT_ADDR & 0xFU].bInterval = 0U;
+ 
+   /* Free allocated memory */
+   if (pdev->pClassData != NULL)
+   {
+     ((USBD_MAMARZ_HID_ItfTypeDef *)pdev->pUserData)->DeInit();
+     USBD_free(pdev->pClassData);
+     pdev->pClassData = NULL;
+   }
+ 
+   return (uint8_t)USBD_OK;
+ }
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_Setup
+   *         Handle the CUSTOM_HID specific requests
+   * @param  pdev: instance
+   * @param  req: usb requests
+   * @retval status
+   */
+ static uint8_t USBD_MAMARZ_HID_Setup(USBD_HandleTypeDef *pdev,
+                                      USBD_SetupReqTypedef *req)
+ {
+   USBD_MAMARZ_HID_HandleTypeDef *hhid = (USBD_MAMARZ_HID_HandleTypeDef *)pdev->pClassData;
+   uint16_t len = 0U;
+   uint8_t  *pbuf = NULL;
+   uint16_t status_info = 0U;
+   USBD_StatusTypeDef ret = USBD_OK;
+ 
+   if (hhid == NULL)
+   {
+     return (uint8_t)USBD_FAIL;
+   }
+ 
+   switch (req->bmRequest & USB_REQ_TYPE_MASK)
+   {
+     case USB_REQ_TYPE_CLASS:
+       switch (req->bRequest)
+       {
+         case MAMARZ_HID_REQ_SET_PROTOCOL:
+           hhid->Protocol = (uint8_t)(req->wValue);
+           break;
+ 
+         case MAMARZ_HID_REQ_GET_PROTOCOL:
+           (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->Protocol, 1U);
+           break;
+ 
+         case MAMARZ_HID_REQ_SET_IDLE:
+           hhid->IdleState = (uint8_t)(req->wValue >> 8);
+           break;
+ 
+         case MAMARZ_HID_REQ_GET_IDLE:
+           (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->IdleState, 1U);
+           break;
+ 
+         case MAMARZ_HID_REQ_SET_REPORT:
+           hhid->IsReportAvailable = 1U;
+           (void)USBD_CtlPrepareRx(pdev, hhid->Report_buf, req->wLength);
+           break;
+ 
+         default:
+           USBD_CtlError(pdev, req);
+           ret = USBD_FAIL;
+           break;
+       }
+       break;
+ 
+     case USB_REQ_TYPE_STANDARD:
+       switch (req->bRequest)
+       {
+         case USB_REQ_GET_STATUS:
+           if (pdev->dev_state == USBD_STATE_CONFIGURED)
+           {
+             (void)USBD_CtlSendData(pdev, (uint8_t *)&status_info, 2U);
+           }
+           else
+           {
+             USBD_CtlError(pdev, req);
+             ret = USBD_FAIL;
+           }
+           break;
+ 
+         case USB_REQ_GET_DESCRIPTOR:
+           if ((req->wValue >> 8) == MAMARZ_HID_REPORT_DESC)
+           {
+             len = MIN(USBD_MAMARZ_HID_REPORT_DESC_SIZE, req->wLength);
+             pbuf = ((USBD_MAMARZ_HID_ItfTypeDef *)pdev->pUserData)->pReport;
+           }
+           else
+           {
+             if ((req->wValue >> 8) == MAMARZ_HID_DESCRIPTOR_TYPE)
+             {
+               pbuf = USBD_MAMARZ_HID_Desc;
+               len = MIN(USB_MAMARZ_HID_DESC_SIZ, req->wLength);
+             }
+           }
+ 
+           (void)USBD_CtlSendData(pdev, pbuf, len);
+           break;
+ 
+         case USB_REQ_GET_INTERFACE:
+           if (pdev->dev_state == USBD_STATE_CONFIGURED)
+           {
+             (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->AltSetting, 1U);
+           }
+           else
+           {
+             USBD_CtlError(pdev, req);
+             ret = USBD_FAIL;
+           }
+           break;
+ 
+         case USB_REQ_SET_INTERFACE:
+           if (pdev->dev_state == USBD_STATE_CONFIGURED)
+           {
+             hhid->AltSetting = (uint8_t)(req->wValue);
+           }
+           else
+           {
+             USBD_CtlError(pdev, req);
+             ret = USBD_FAIL;
+           }
+           break;
+ 
+         case USB_REQ_CLEAR_FEATURE:
+           break;
+ 
+         default:
+           USBD_CtlError(pdev, req);
+           ret = USBD_FAIL;
+           break;
+       }
+       break;
+ 
+     default:
+       USBD_CtlError(pdev, req);
+       ret = USBD_FAIL;
+       break;
+   }
+   return (uint8_t)ret;
+ }
+ 
+ /**
+   * @brief  USBD_MOUSE_HID_SendReport
+   *         Send MOUSE_HID Report
+   * @param  pdev: device instance
+   * @param  buff: pointer to report
+   * @retval status
+   */
+ uint8_t USBD_MAMARZ_HID_SendReport(USBD_HandleTypeDef *pdev,
+                                    uint8_t *report, uint16_t len)
+ {
+   USBD_MAMARZ_HID_HandleTypeDef *hhid;
+ 
+   if (pdev->pClassData == NULL)
+   {
+     return (uint8_t)USBD_FAIL;
+   }
+ 
+   hhid = (USBD_MAMARZ_HID_HandleTypeDef *)pdev->pClassData;
+ 
+   if (pdev->dev_state == USBD_STATE_CONFIGURED)
+   {
+     if (hhid->state == MAMARZ_HID_IDLE)
+     {
+       hhid->state = CUSTOM_HID_BUSY;
+       (void)USBD_LL_Transmit(pdev, MAMARZ_HID_EPIN_ADDR, report, len);
+     }
+     else
+     {
+       return (uint8_t)USBD_BUSY;
+     }
+   }
+   return (uint8_t)USBD_OK;
+ }
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_GetFSCfgDesc
+   *         return FS configuration descriptor
+   * @param  speed : current device speed
+   * @param  length : pointer data length
+   * @retval pointer to descriptor buffer
+   */
+ static uint8_t *USBD_MAMARZ_HID_GetFSCfgDesc(uint16_t *length)
+ {
+   *length = (uint16_t)sizeof(USBD_MAMARZ_HID_CfgFSDesc);
+ 
+   return USBD_MAMARZ_HID_CfgFSDesc;
+ }
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_GetHSCfgDesc
+   *         return HS configuration descriptor
+   * @param  speed : current device speed
+   * @param  length : pointer data length
+   * @retval pointer to descriptor buffer
+   */
+ static uint8_t *USBD_MAMARZ_HID_GetHSCfgDesc(uint16_t *length)
+ {
+   *length = (uint16_t)sizeof(USBD_MAMARZ_HID_CfgHSDesc);
+ 
+   return USBD_MAMARZ_HID_CfgHSDesc;
+ }
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_GetOtherSpeedCfgDesc
+   *         return other speed configuration descriptor
+   * @param  speed : current device speed
+   * @param  length : pointer data length
+   * @retval pointer to descriptor buffer
+   */
+ static uint8_t *USBD_MAMARZ_HID_GetOtherSpeedCfgDesc(uint16_t *length)
+ {
+   *length = (uint16_t)sizeof(USBD_MAMARZ_HID_OtherSpeedCfgDesc);
+ 
+   return USBD_MAMARZ_HID_OtherSpeedCfgDesc;
+ }
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_DataIn
+   *         handle data IN Stage
+   * @param  pdev: device instance
+   * @param  epnum: endpoint index
+   * @retval status
+   */
+ static uint8_t USBD_MAMARZ_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
+ {
+   UNUSED(epnum);
+ 
+   /* Ensure that the FIFO is empty before a new transfer, this condition could
+   be caused by  a new transfer before the end of the previous transfer */
+   ((USBD_MAMARZ_HID_HandleTypeDef *)pdev->pClassData)->state = MAMARZ_HID_IDLE;
+ 
+   return (uint8_t)USBD_OK;
+ }
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_DataOut
+   *         handle data OUT Stage
+   * @param  pdev: device instance
+   * @param  epnum: endpoint index
+   * @retval status
+   */
+ static uint8_t USBD_MAMARZ_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
+ {
+   UNUSED(epnum);
+   USBD_MAMARZ_HID_HandleTypeDef *hhid;
+ 
+   if (pdev->pClassData == NULL)
+   {
+     return (uint8_t)USBD_FAIL;
+   }
+ 
+   hhid = (USBD_MAMARZ_HID_HandleTypeDef *)pdev->pClassData;
+ 
+   /* USB data will be immediately processed, this allow next USB traffic being
+   NAKed till the end of the application processing */
+   ((USBD_MAMARZ_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
+                                                             hhid->Report_buf[1]);
+ 
+   return (uint8_t)USBD_OK;
+ }
+ 
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_ReceivePacket
+   *         prepare OUT Endpoint for reception
+   * @param  pdev: device instance
+   * @retval status
+   */
+ uint8_t USBD_MAMARZ_HID_ReceivePacket(USBD_HandleTypeDef *pdev)
+ {
+   USBD_MAMARZ_HID_HandleTypeDef *hhid;
+ 
+   if (pdev->pClassData == NULL)
+   {
+     return (uint8_t)USBD_FAIL;
+   }
+ 
+   hhid = (USBD_MAMARZ_HID_HandleTypeDef *)pdev->pClassData;
+ 
+   /* Resume USB Out process */
+   (void)USBD_LL_PrepareReceive(pdev, MAMARZ_HID_EPOUT_ADDR, hhid->Report_buf,
+                                USBD_MAMARZ_HID_OUTREPORT_BUF_SIZE);
+ 
+   return (uint8_t)USBD_OK;
+ }
+ 
+ 
+ /**
+   * @brief  USBD_CUSTOM_HID_EP0_RxReady
+   *         Handles control request data.
+   * @param  pdev: device instance
+   * @retval status
+   */
+ static uint8_t USBD_MAMARZ_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
+ {
+   USBD_MAMARZ_HID_HandleTypeDef *hhid = (USBD_MAMARZ_HID_HandleTypeDef *)pdev->pClassData;
+ 
+   if (hhid == NULL)
+   {
+     return (uint8_t)USBD_FAIL;
+   }
+ 
+   if (hhid->IsReportAvailable == 1U)
+   {
+     ((USBD_MAMARZ_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
+                                                               hhid->Report_buf[1]);
+     hhid->IsReportAvailable = 0U;
+   }
+ 
+   return (uint8_t)USBD_OK;
+ }
+ 
+ /**
+   * @brief  DeviceQualifierDescriptor
+   *         return Device Qualifier descriptor
+   * @param  length : pointer data length
+   * @retval pointer to descriptor buffer
+   */
+ static uint8_t *USBD_MAMARZ_HID_GetDeviceQualifierDesc(uint16_t *length)
+ {
+   *length = (uint16_t)sizeof(USBD_MAMARZ_HID_DeviceQualifierDesc);
+ 
+   return USBD_MAMARZ_HID_DeviceQualifierDesc;
+ }
+ 
 
-  if (hhid == NULL)
-  {
-    pdev->pClassData = NULL;
-    return (uint8_t)USBD_EMEM;
-  }
-
-  pdev->pClassData = (void *)hhid;
-
-  if (pdev->dev_speed == USBD_SPEED_HIGH)
-  {
-    pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].bInterval = COMBINED_HID_HS_BINTERVAL;
-    pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].bInterval = COMBINED_HID_HS_BINTERVAL;
-  }
-  else   /* LOW and FULL-speed endpoints */
-  {
-    pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].bInterval = COMBINED_HID_FS_BINTERVAL;
-    pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].bInterval = COMBINED_HID_FS_BINTERVAL;
-  }
-
-  /* Open EP IN */
-  (void)USBD_LL_OpenEP(pdev, COMBINED_HID_EPIN_ADDR, USBD_EP_TYPE_INTR,
-                       COMBINED_HID_EPIN_SIZE);
-
-  pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].is_used = 1U;
-
-  /* Open EP OUT */
-  (void)USBD_LL_OpenEP(pdev, COMBINED_HID_EPOUT_ADDR, USBD_EP_TYPE_INTR,
-                       COMBINED_HID_EPOUT_SIZE);
-
-  pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].is_used = 1U;
-
-  hhid->state = COMBINED_HID_IDLE;
-
-  ((USBD_COMBINED_HID_ItfTypeDef *)pdev->pUserData)->Init();
-
-  /* Prepare Out endpoint to receive 1st packet */
-  (void)USBD_LL_PrepareReceive(pdev, COMBINED_HID_EPOUT_ADDR, hhid->Report_buf,
-                               USBD_COMBINEDHID_OUTREPORT_BUF_SIZE);
-
-  return (uint8_t)USBD_OK;
-}
-static uint8_t USBD_MAMARZ_HID_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
-{
-  UNUSED(cfgidx);
-
-  /* Close COMBINED_HID EP IN */
-  (void)USBD_LL_CloseEP(pdev, COMBINED_HID_EPIN_ADDR);
-  pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].is_used = 0U;
-  pdev->ep_in[COMBINED_HID_EPIN_ADDR & 0xFU].bInterval = 0U;
-
-  /* Close COMBINED_HID EP OUT */
-  (void)USBD_LL_CloseEP(pdev, COMBINED_HID_EPOUT_ADDR);
-  pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].is_used = 0U;
-  pdev->ep_out[COMBINED_HID_EPOUT_ADDR & 0xFU].bInterval = 0U;
-
-  /* Free allocated memory */
-  if (pdev->pClassData != NULL)
-  {
-    ((USBD_COMBINED_HID_ItfTypeDef *)pdev->pUserData)->DeInit();
-    USBD_free(pdev->pClassData);
-    pdev->pClassData = NULL;
-  }
-
-  return (uint8_t)USBD_OK;
-}
-static uint8_t USBD_MAMARZ_HID_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
-{
-  USBD_COMBINED_HID_HandleTypeDef *hhid = (USBD_COMBINED_HID_HandleTypeDef *)pdev->pClassData;
-  uint16_t len = 0U;
-  uint8_t  *pbuf = NULL;
-  uint16_t status_info = 0U;
-  USBD_StatusTypeDef ret = USBD_OK;
-
-  if (hhid == NULL)
-  {
-    return (uint8_t)USBD_FAIL;
-  }
-
-  switch (req->bmRequest & USB_REQ_TYPE_MASK)
-  {
-    case USB_REQ_TYPE_CLASS:
-      switch (req->bRequest)
-      {
-        case CUSTOM_HID_REQ_SET_PROTOCOL:
-          hhid->Protocol = (uint8_t)(req->wValue);
-          break;
-
-        case CUSTOM_HID_REQ_GET_PROTOCOL:
-          (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->Protocol, 1U);
-          break;
-
-        case CUSTOM_HID_REQ_SET_IDLE:
-          hhid->IdleState = (uint8_t)(req->wValue >> 8);
-          break;
-
-        case CUSTOM_HID_REQ_GET_IDLE:
-          (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->IdleState, 1U);
-          break;
-
-        case CUSTOM_HID_REQ_SET_REPORT:
-          hhid->IsReportAvailable = 1U;
-          (void)USBD_CtlPrepareRx(pdev, hhid->Report_buf, req->wLength);
-          break;
-
-        default:
-          USBD_CtlError(pdev, req);
-          ret = USBD_FAIL;
-          break;
-      }
-      break;
-
-    case USB_REQ_TYPE_STANDARD:
-      switch (req->bRequest)
-      {
-        case USB_REQ_GET_STATUS:
-          if (pdev->dev_state == USBD_STATE_CONFIGURED)
-          {
-            (void)USBD_CtlSendData(pdev, (uint8_t *)&status_info, 2U);
-          }
-          else
-          {
-            USBD_CtlError(pdev, req);
-            ret = USBD_FAIL;
-          }
-          break;
-
-        case USB_REQ_GET_DESCRIPTOR:
-          if ((req->wValue >> 8) == CUSTOM_HID_REPORT_DESC)
-          {
-            len = MIN(USBD_CUSTOM_HID_REPORT_DESC_SIZE, req->wLength);
-            pbuf = ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->pReport;
-          }
-          else
-          {
-            if ((req->wValue >> 8) == CUSTOM_HID_DESCRIPTOR_TYPE)
-            {
-              pbuf = USBD_CUSTOM_HID_Desc;
-              len = MIN(USB_CUSTOM_HID_DESC_SIZ, req->wLength);
-            }
-          }
-
-          (void)USBD_CtlSendData(pdev, pbuf, len);
-          break;
-
-        case USB_REQ_GET_INTERFACE:
-          if (pdev->dev_state == USBD_STATE_CONFIGURED)
-          {
-            (void)USBD_CtlSendData(pdev, (uint8_t *)&hhid->AltSetting, 1U);
-          }
-          else
-          {
-            USBD_CtlError(pdev, req);
-            ret = USBD_FAIL;
-          }
-          break;
-
-        case USB_REQ_SET_INTERFACE:
-          if (pdev->dev_state == USBD_STATE_CONFIGURED)
-          {
-            hhid->AltSetting = (uint8_t)(req->wValue);
-          }
-          else
-          {
-            USBD_CtlError(pdev, req);
-            ret = USBD_FAIL;
-          }
-          break;
-
-        case USB_REQ_CLEAR_FEATURE:
-          break;
-
-        default:
-          USBD_CtlError(pdev, req);
-          ret = USBD_FAIL;
-          break;
-      }
-      break;
-
-    default:
-      USBD_CtlError(pdev, req);
-      ret = USBD_FAIL;
-      break;
-  }
-  return (uint8_t)ret;
-}
-
-static uint8_t USBD_MAMARZ_HID_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
-{
-
-}
-static uint8_t USBD_MAMARZ_HID_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
-{
-
-}
-static uint8_t USBD_MAMARZ_HID_EP0_RxReady(USBD_HandleTypeDef  *pdev)
-{
-
-}
-
-static uint8_t *USBD_MAMARZ_HID_GetFSCfgDesc(uint16_t *length)
-{
-
-}
-static uint8_t *USBD_MAMARZ_HID_GetHSCfgDesc(uint16_t *length)
-{
-
-}
-static uint8_t *USBD_MAMARZ_HID_GetOtherSpeedCfgDesc(uint16_t *length)
-{
-
-}
-static uint8_t *USBD_MAMARZ_HID_GetDeviceQualifierDesc(uint16_t *length)
-{
-
-}
 /// *** MAMARZ *** ////
 
 /**
