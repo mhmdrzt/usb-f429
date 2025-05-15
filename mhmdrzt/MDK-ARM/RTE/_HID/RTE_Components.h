@@ -3,8 +3,8 @@
  * Auto generated Run-Time-Environment Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'mhmdrzt' 
- * Target:  'mhmdrzt' 
+ * Project: 'HID' 
+ * Target:  'HID' 
  */
 
 #ifndef RTE_COMPONENTS_H

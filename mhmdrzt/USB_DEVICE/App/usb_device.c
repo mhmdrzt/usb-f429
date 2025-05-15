@@ -24,8 +24,7 @@
 #include "usb_device.h"
 #include "usbd_core.h"
 #include "usbd_desc.h"
-#include "usbd_customhid.h"
-#include "usbd_custom_hid_if.h"
+#include "usbd_composite.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -73,16 +72,7 @@ void MX_USB_DEVICE_Init(void)
   {
     Error_Handler();
   }
-//  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_CUSTOM_HID) != USBD_OK)
-	/* Register Classes */
-	for(int i = 0; i < USBD_MAX_NUM_INTERFACES - 1; i++) {
-		if (USBD_RegisterClassForInterface(&hUsbDeviceFS, i, USBD_COMBINED_HID[i]) != USBD_OK)
-		{
-			Error_Handler();
-		}
-	}
-	
-  if (USBD_CUSTOM_HID_RegisterInterface(&hUsbDeviceFS, &USBD_CustomHID_fops_FS) != USBD_OK)
+  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_Composite) != USBD_OK)
   {
     Error_Handler();
   }
